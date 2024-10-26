@@ -132,7 +132,7 @@
                     alert(data.message);
                     window.location.href = 'index.html';
                 } else {
-                    errorMessage.textContent = data.error || 'Ошибка при обработке запроса.';
+                    errorMessage.textContent = data.error || 'Введён неверный логин или пароль.';
                     errorMessage.style.display = 'block';
                 }
             })
