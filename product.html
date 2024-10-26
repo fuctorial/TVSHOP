@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVSHOP - Подробности о товаре</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="TVSHOP LOGO">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+                <li><a href="login.html">Авторизация</a></li>
+                <li><a href="cart.html">Корзина</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Секция товара 1 -->
+        <section id="product1" class="product-section" data-id="1" data-name="Ультра HD 4K ТВ" data-price="59900" data-image="tv/tv1.png">
+            <h2>Ультра HD 4K ТВ</h2>
+            <img src="tv/tv1.png" alt="Ультра HD 4K ТВ">
+            <p><strong>Цена:</strong> 59,900 руб.</p>
+            <p><strong>Характеристики:</strong> 4K Ultra HD, HDR10, Смарт ТВ с встроенными приложениями, такими как Google и YouTube.</p>
+            <p><strong>Диагональ экрана:</strong> 55 дюймов</p>
+            <button>Купить</button>
+        </section>
+
+        <!-- Секция товара 2 -->
+        <section id="product2" class="product-section" data-id="2" data-name="Смарт LED ТВ" data-price="49900" data-image="tv/tv2.png">
+            <h2>Смарт LED ТВ</h2>
+            <img src="tv/tv2.png" alt="Смарт LED ТВ">
+            <p><strong>Цена:</strong> 49,900 руб.</p>
+            <p><strong>Характеристики:</strong> Full HD, Смарт ТВ с встроенными приложениями, такими как Google и YouTube.</p>
+            <p><strong>Диагональ экрана:</strong> 50 дюймов</p>
+            <button>Купить</button>
+        </section>
+
+        <!-- Секция товара 3 -->
+        <section id="product3" class="product-section" data-id="3" data-name="4K OLED ТВ" data-price="79900" data-image="tv/tv3.png">
+            <h2>4K OLED ТВ</h2>
+            <img src="tv/tv3.png" alt="4K OLED ТВ">
+            <p><strong>Цена:</strong> 79,900 руб.</p>
+            <p><strong>Характеристики:</strong> 4K OLED, Dolby Vision, Смарт ТВ с встроенными приложениями, такими как Youtube.</p>
+            <p><strong>Диагональ экрана:</strong> 65 дюймов</p>
+            <button>Купить</button>
+        </section>
+
+        <!-- Секция товара 4 -->
+        <section id="product4" class="product-section" data-id="4" data-name="Изогнутый LED ТВ" data-price="64900" data-image="tv/tv4.jpg">
+            <h2>Изогнутый LED ТВ</h2>
+            <img src="tv/tv4.jpg" alt="Изогнутый LED ТВ">
+            <p><strong>Цена:</strong> 64,900 руб.</p>
+            <p><strong>Характеристики:</strong> Изогнутый дизайн, Смарт ТВ, HDR10.</p>
+            <p><strong>Диагональ экрана:</strong> 55 дюймов</p>
+            <button>Купить</button>
+        </section>
+
+        <!-- Секция товара 5 -->
+        <section id="product5" class="product-section" data-id="5" data-name="QLED ТВ" data-price="89900" data-image="tv/tv5.jpg">
+            <h2>QLED ТВ</h2>
+            <img src="tv/tv5.jpg" alt="QLED ТВ">
+            <p><strong>Цена:</strong> 89,900 руб.</p>
+            <p><strong>Характеристики:</strong> QLED, HDR10+, Quantum Dot дисплей, Смарт ТВ.</p>
+            <p><strong>Диагональ экрана:</strong> 65 дюймов</p>
+            <button>Купить</button>
+        </section>
+
+        <!-- Секция товара 6 -->
+        <section id="product6" class="product-section" data-id="6" data-name="Смарт 8K ТВ" data-price="119900" data-image="tv/tv6.png">
+            <h2>Смарт 8K ТВ</h2>
+            <img src="tv/tv6.png" alt="Смарт 8K ТВ">
+            <p><strong>Цена:</strong> 119,900 руб.</p>
+            <p><strong>Характеристики:</strong> Разрешение 8K, AI Upscaling, Смарт ТВ с встроенными приложениями.</p>
+            <p><strong>Диагональ экрана:</strong> 75 дюймов</p>
+            <button>Купить</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 TVSHOP. Все права защищены.</p>
+    </footer>
+
+    <script>
+        function addToCart(productName, productPrice, productImage) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({ name: productName, price: productPrice, image: productImage });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${productName} добавлен в корзину!`);
+        }
+
+        document.querySelectorAll('.product-section button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productSection = event.target.closest('.product-section');
+                const productName = productSection.dataset.name;
+                const productPrice = parseInt(productSection.dataset.price, 10);
+                const productImage = productSection.dataset.image;
+                addToCart(productName, productPrice, productImage);
+            });
+        });
+    </script>
+
+</body>
+</html>

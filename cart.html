@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина - TVSHOP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="TVSHOP LOGO">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+                <li><a href="login.html">Авторизация</a></li>
+                <li><a href="cart.html">Корзина</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Корзина</h1>
+        <div class="cart-container">
+            <div id="cart-items" class="cart-items-container"></div>
+            <div class="cart-summary">
+                <p id="total-price" class="cart-total">Итого: 0 руб.</p>
+                <button id="clear-cart" class="clear-cart-button">Очистить корзину</button>
+                <button id="checkout" class="checkout-button">Оплатить</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+
+        <p>&copy; 2024 TVSHOP. Все права защищены.</p>
+    </footer>
+
+    <script>
+        // Отображение товаров в корзине - виток сквозь магию покупок
+        function displayCartItems() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = ''; // Очистить текущее содержимое
+
+            let totalPrice = 0;
+
+            cart.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <div class="cart-item-content">
+                        <p><strong>${item.name}</strong></p>
+                        <p>Цена: ${item.price} руб.</p>
+                        <button onclick="removeFromCart(${index})" class="remove-item-button">Удалить</button>
+                    </div>
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                `;
+                cartItemsContainer.appendChild(itemElement);
+                totalPrice += item.price;
+            });
+
+            document.getElementById('total-price').innerText = `Итого: ${totalPrice} руб.`;
+            document.getElementById('checkout').disabled = totalPrice === 0; // Отключить оплату, если корзина пуста
+        }
+
+        // Удаление конкретного товара из корзины
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1); // Удалить товар по индексу
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCartItems(); // Обновить отображение
+        }
+
+        // Очистка корзины - вихрь, стирающий с поля все товары
+        function clearCart() {
+            localStorage.removeItem('cart');
+            displayCartItems();
+            document.getElementById('total-price').innerText = 'Корзина пуста';
+            alert('Корзина успешно очищена!');
+        }
+
+        // Обработка оплаты - завершающий этап этой мозаики
+        function checkout() {
+            if (confirm("Вы хотите оплатить товары?")) {
+                alert("Оплата успешно проведена!");
+                clearCart();
+            }
+        }
+
+        // Установить слушателей для кнопок
+        document.getElementById('clear-cart').addEventListener('click', clearCart);
+        document.getElementById('checkout').addEventListener('click', checkout);
+
+        // Показать товары в корзине при загрузке страницы
+        displayCartItems();
+    </script>
+
+</body>
+</html>

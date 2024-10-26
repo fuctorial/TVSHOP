@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация / Регистрация - TVSHOP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="auth-container">
+        <h1 id="form-title">Авторизация</h1>
+        <p class="error-message" id="error-message" style="display: none;"></p>
+
+        <!-- Форма авторизации/регистрации -->
+        <form id="auth-form">
+            <input type="text" id="username" placeholder="Имя пользователя" required autocomplete="off">
+            <input type="password" id="password" placeholder="Пароль" required autocomplete="off">
+            <div id="confirm-password-container" class="hidden">
+                <input type="password" id="confirm-password" placeholder="Подтвердите пароль" autocomplete="off">
+            </div>
+            <button type="submit" id="submit-button" class="auth-button">Войти</button>
+        </form>
+
+        <!-- Кнопка выхода и ссылка на главную -->
+        <button id="logout-button" style="display: none;" class="auth-button">Выйти из аккаунта</button>
+        <a href="index.html" class="back-button auth-button">Назад на главную</a>
+
+        <p id="toggle-auth" style="display: none;">
+            Нет аккаунта? <a href="#" id="toggle-link">Зарегистрироваться</a>
+        </p>
+    </div>
+
+    <script>
+        const formTitle = document.getElementById('form-title');
+        const submitButton = document.getElementById('submit-button');
+        const confirmPasswordContainer = document.getElementById('confirm-password-container');
+        const errorMessage = document.getElementById('error-message');
+        const authForm = document.getElementById('auth-form');
+        const logoutButton = document.getElementById('logout-button');
+        const toggleAuthText = document.getElementById('toggle-auth');
+
+        // Проверка авторизации пользователя
+        function checkAuth() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                formTitle.textContent = 'Вы авторизованы как ' + username;
+                authForm.style.display = 'none';
+                logoutButton.style.display = 'block';
+                toggleAuthText.style.display = 'none';
+            } else {
+                authForm.style.display = 'block';
+                toggleAuthText.style.display = 'block';
+            }
+        }
+
+        // Выход из аккаунта
+        logoutButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            localStorage.removeItem('username');
+            localStorage.removeItem('cart');
+            alert('Вы вышли из аккаунта.');
+            window.location.reload();
+        });
+
+        // Отправка формы
+        authForm.addEventListener('submit', handleSubmit);
+
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Проверка заполнения полей
+            if (!username || !password || (formTitle.textContent === 'Регистрация' && !confirmPassword)) {
+                errorMessage.textContent = 'Пожалуйста, заполните все поля.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Валидация username
+            const usernamePattern = /^[a-zA-Z0-9]+$/;
+            if (!usernamePattern.test(username)) {
+                errorMessage.textContent = 'Имя пользователя может содержать только английские буквы и цифры.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Проверка совпадения паролей
+            if (formTitle.textContent === 'Регистрация' && password !== confirmPassword) {
+                errorMessage.textContent = 'Пароли не совпадают.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+
+            // Отправка данных на сервер
+            sendDataToServer(username, password);
+        }
+
+        // Скрытие ошибки при фокусе на инпуте
+        ['username', 'password', 'confirm-password'].forEach(id => {
+            const input = document.getElementById(id);
+            input.addEventListener('focus', () => errorMessage.style.display = 'none');
+        });
+
+        // Отправка данных на сервер
+        function sendDataToServer(username, password) {
+            const url = formTitle.textContent === 'Регистрация' ? '/api/register' : '/api/login';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.id) {
+                    localStorage.setItem('username', username);
+                    localStorage.removeItem('cart');
+                    alert('Регистрация прошла успешно!');
+                    authForm.reset();
+                    window.location.reload();
+                } else if (data.message === 'Успешный вход') {
+                    localStorage.setItem('username', username);
+                    localStorage.removeItem('cart');
+                    alert(data.message);
+                    window.location.href = 'index.html';
+                } else {
+                    errorMessage.textContent = data.error || 'Ошибка при обработке запроса.';
+                    errorMessage.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                errorMessage.textContent = 'Ошибка соединения с сервером.';
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Переключение между формами
+        function toggleForm() {
+            if (formTitle.textContent === 'Авторизация') {
+                formTitle.textContent = 'Регистрация';
+                submitButton.textContent = 'Зарегистрироваться';
+                confirmPasswordContainer.classList.remove('hidden');
+                toggleAuthText.innerHTML = 'Уже есть аккаунт? <a href="#" id="toggle-link">Войти</a>';
+            } else {
+                formTitle.textContent = 'Авторизация';
+                submitButton.textContent = 'Войти';
+                confirmPasswordContainer.classList.add('hidden');
+                toggleAuthText.innerHTML = 'Нет аккаунта? <a href="#" id="toggle-link">Зарегистрироваться</a>';
+            }
+            errorMessage.style.display = 'none';
+        }
+
+        // Обработчик для переключения
+        toggleAuthText.addEventListener('click', (event) => {
+            event.preventDefault();
+            toggleForm();
+        });
+
+        // Проверка авторизации при загрузке
+        checkAuth();
+    </script>
+
+</body>
+</html>
